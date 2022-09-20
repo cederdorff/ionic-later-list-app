@@ -1,0 +1,7 @@
+{
+  "name": "ionic-later-list-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
