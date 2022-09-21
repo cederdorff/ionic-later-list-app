@@ -16,7 +16,7 @@ export default function PostCard({ post }) {
     }, [post.createdBy]);
 
     return (
-        <IonCard key={post.id}>
+        <IonCard key={post.id} routerLink={`posts/${post.id}`}>
             <IonItem>
                 <IonAvatar slot="start">
                     <IonImg src={user.image} />
