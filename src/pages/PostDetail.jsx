@@ -1,7 +1,8 @@
-import { IonAvatar, IonBackButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBackButton, IonButtons, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { timerOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import UserDetails from "../components/UserDetails";
 
 export default function PostDetail() {
     const params = useParams();
@@ -19,7 +20,7 @@ export default function PostDetail() {
 
     return (
         <IonPage>
-            <IonHeader>
+            <IonHeader collapse>
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton />
@@ -28,34 +29,23 @@ export default function PostDetail() {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
+                <UserDetails uid={post.createdBy} />
                 <IonList>
                     <IonImg src={post.image} />
-                    <IonCard key={post.id} routerLink={`posts/${post.id}`}>
-                        {/* <IonItem>
-                            <IonAvatar slot="start">
-                                <IonImg src={user.image} />
-                            </IonAvatar>
-                            <IonLabel>
-                                <h3>{user.name}</h3>
-                                <p>{user.title}</p>
-                            </IonLabel>
-                        </IonItem> */}
+                    <IonCardHeader>
+                        <IonCardSubtitle>
+                            <IonLabel>{post.category}</IonLabel>
+                        </IonCardSubtitle>
+                        <IonCardTitle>{post.title}</IonCardTitle>
+                    </IonCardHeader>
 
-                        <IonCardHeader>
-                            <IonCardSubtitle>
-                                <IonLabel>{post.category}</IonLabel>
-                            </IonCardSubtitle>
-                            <IonCardTitle>{post.title}</IonCardTitle>
-                        </IonCardHeader>
-
-                        <IonCardContent>
-                            <p>{post.description}</p>
-                        </IonCardContent>
-                        <IonItem lines="none">
-                            <IonIcon icon={timerOutline} slot="end"></IonIcon>
-                            <IonLabel>{post.duration} min</IonLabel>
-                        </IonItem>
-                    </IonCard>
+                    <IonCardContent>
+                        <p>{post.description}</p>
+                    </IonCardContent>
+                    <IonItem lines="none">
+                        <IonIcon icon={timerOutline} slot="end"></IonIcon>
+                        <IonLabel>{post.duration} min</IonLabel>
+                    </IonItem>
                 </IonList>
             </IonContent>
         </IonPage>
