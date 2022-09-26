@@ -1,4 +1,4 @@
-import { IonBackButton, IonButtons, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { timerOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -46,6 +46,9 @@ export default function PostDetail() {
                         <IonIcon icon={timerOutline} slot="end"></IonIcon>
                         <IonLabel>{post.duration} min</IonLabel>
                     </IonItem>
+                    <IonButton expand="full" href={post.url}>
+                        Go to content
+                    </IonButton>
                 </IonList>
             </IonContent>
         </IonPage>
