@@ -1,22 +1,44 @@
-import { IonContent, IonHeader, IonLabel, IonList, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
+import {
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonHeader,
+    IonIcon,
+    IonLabel,
+    IonList,
+    IonPage,
+    IonSegment,
+    IonSegmentButton,
+    IonTitle,
+    IonToolbar
+} from "@ionic/react";
+import { add } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import AddPostModal from "../components/AddPostModal";
 import PostCard from "../components/PostCard";
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const [showAddPostModal, setShowAddPostModal] = useState(false);
 
     useEffect(() => {
-        async function getData() {
-            const res = await fetch("https://race-later-list-default-rtdb.firebaseio.com/posts.json");
-            const dataObj = await res.json();
-            const postsArray = Object.keys(dataObj).map(key => ({ id: key, ...dataObj[key] })); // from object to array
-            setPosts(postsArray);
-        }
         getData();
     }, []);
 
-    const filteredPosts = selectedCategory === "All" ? [...posts] : posts.filter(post => post.category === selectedCategory);
+    async function getData() {
+        const res = await fetch("https://race-later-list-default-rtdb.firebaseio.com/posts.json");
+        const dataObj = await res.json();
+        const postsArray = Object.keys(dataObj).map(key => ({ id: key, ...dataObj[key] })); // from object to array
+        setPosts(postsArray);
+    }
+
+    const filteredPosts =
+        selectedCategory === "All" ? [...posts] : posts.filter(post => post.category === selectedCategory);
+
+    function openModal() {
+        setShowAddPostModal(true);
+    }
 
     return (
         <IonPage>
@@ -25,7 +47,9 @@ export default function Home() {
                     <IonTitle>Later List</IonTitle>
                 </IonToolbar>
                 <IonToolbar>
-                    <IonSegment value={selectedCategory} onIonChange={e => setSelectedCategory(e.detail.value)}>
+                    <IonSegment
+                        value={selectedCategory}
+                        onIonChange={e => setSelectedCategory(e.detail.value)}>
                         <IonSegmentButton value="All">
                             <IonLabel>All</IonLabel>
                         </IonSegmentButton>
@@ -51,6 +75,12 @@ export default function Home() {
                     ))}
                 </IonList>
             </IonContent>
+            <IonFab vertical="bottom" horizontal="end" slot="fixed">
+                <IonFabButton onClick={openModal} id="open-modal">
+                    <IonIcon icon={add} />
+                </IonFabButton>
+            </IonFab>
+            <AddPostModal show={showAddPostModal} setShow={setShowAddPostModal} reload={getData} />
         </IonPage>
     );
 }
