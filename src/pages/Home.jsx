@@ -10,19 +10,20 @@ import {
     IonSegment,
     IonSegmentButton,
     IonTitle,
-    IonToolbar
+    IonToolbar,
+    useIonViewWillEnter
 } from "@ionic/react";
 import { add } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import AddPostModal from "../components/AddPostModal";
+import { useState } from "react";
+import PostModal from "../components/PostModal";
 import PostCard from "../components/PostCard";
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [showAddPostModal, setShowAddPostModal] = useState(false);
+    const [showPostModal, setShowPostModal] = useState(false);
 
-    useEffect(() => {
+    useIonViewWillEnter(() => {
         getData();
     }, []);
 
@@ -30,14 +31,15 @@ export default function Home() {
         const res = await fetch("https://race-later-list-default-rtdb.firebaseio.com/posts.json");
         const dataObj = await res.json();
         const postsArray = Object.keys(dataObj).map(key => ({ id: key, ...dataObj[key] })); // from object to array
-        setPosts(postsArray);
+        const sorted = postsArray.sort((post1, post2) => post2.createdAt - post1.createdAt);
+        setPosts(sorted);
     }
 
     const filteredPosts =
         selectedCategory === "All" ? [...posts] : posts.filter(post => post.category === selectedCategory);
 
     function openModal() {
-        setShowAddPostModal(true);
+        setShowPostModal(true);
     }
 
     return (
@@ -80,7 +82,7 @@ export default function Home() {
                     <IonIcon icon={add} />
                 </IonFabButton>
             </IonFab>
-            <AddPostModal show={showAddPostModal} setShow={setShowAddPostModal} reload={getData} />
+            <PostModal show={showPostModal} setShow={setShowPostModal} />
         </IonPage>
     );
 }

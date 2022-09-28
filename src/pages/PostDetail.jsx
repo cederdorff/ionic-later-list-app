@@ -1,31 +1,96 @@
-import { IonBackButton, IonButton, IonButtons, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
-import { timerOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import {
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonCardContent,
+    IonCardHeader,
+    IonCardSubtitle,
+    IonCardTitle,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonImg,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+    useIonAlert,
+    useIonViewWillEnter
+} from "@ionic/react";
+import { pencil, timerOutline, trash } from "ionicons/icons";
+import { useState } from "react";
+import { useHistory, useParams } from "react-router";
+import PostModal from "../components/PostModal";
 import UserDetails from "../components/UserDetails";
 
 export default function PostDetail() {
     const params = useParams();
+    const history = useHistory();
     const [post, setPost] = useState({});
+    const [presentDeleteDialog] = useIonAlert();
+    const url = `https://race-later-list-default-rtdb.firebaseio.com/posts/${params.id}.json`;
+    const [showPostModal, setShowPostModal] = useState(false);
 
-    useEffect(() => {
-        async function getPost() {
-            const res = await fetch(`https://race-later-list-default-rtdb.firebaseio.com/posts/${params.id}.json`);
-            const postData = await res.json();
-            console.log(postData);
-            setPost(postData);
-        }
+    useIonViewWillEnter(() => {
         getPost();
-    }, [params.id]);
+    }, [url]);
+
+    async function getPost() {
+        const res = await fetch(url);
+        const postData = await res.json();
+        setPost({ id: params.id, ...postData });
+    }
+
+    function handleDelete() {
+        presentDeleteDialog({
+            header: "Delete post",
+            subHeader: post.title,
+            message: "Do you want to delete the post?",
+            buttons: [
+                {
+                    text: "No",
+                    role: "cancel"
+                },
+                {
+                    text: "Yes",
+                    role: "destructive",
+                    handler: deletePost
+                }
+            ]
+        });
+    }
+
+    async function deletePost() {
+        const res = await fetch(url, { method: "DELETE" });
+        if (res.ok) {
+            history.goBack();
+        } else {
+            console.log("Something went wrong");
+        }
+    }
+
+    function showUpdateModal() {
+        setShowPostModal(true);
+    }
 
     return (
         <IonPage>
             <IonHeader collapse>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton />
+                        <IonBackButton defaultHref="/home" />
                     </IonButtons>
                     <IonTitle>{post.title}</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={showUpdateModal}>
+                            <IonIcon slot="icon-only" icon={pencil} />
+                        </IonButton>
+                        <IonButton onClick={handleDelete}>
+                            <IonIcon slot="icon-only" icon={trash} />
+                        </IonButton>
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
@@ -50,6 +115,7 @@ export default function PostDetail() {
                         Go to content
                     </IonButton>
                 </IonList>
+                <PostModal show={showPostModal} setShow={setShowPostModal} post={post} reload={getPost} />
             </IonContent>
         </IonPage>
     );
